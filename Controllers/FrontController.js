@@ -1,32 +1,36 @@
 const UserModel = require("../Models/user");
 const bcrypt = require("bcrypt");
 const cloudinary = require("cloudinary");
+const jwt = require('jsonwebtoken');
 
 class FrontController {
   static home = async (req, res) => {
     try {
-      res.render("home");
+      const {name,image}=req.udata
+      res.render("home",{n:name,i:image});
     } catch {
       console.log(error);
     }
   };
   static about = async (req, res) => {
     try {
-      res.render("about");
+      const {name,image}=req.udata
+      res.render("about",{n:name,i:image});
     } catch {
       console.log(error);
     }
   };
   static contact = async (req, res) => {
     try {
-      res.render("contact");
+      const {name,image}=req.udata
+      res.render("contact",{n:name,i:image});
     } catch {
       console.log(error);
     }
   };
   static login = async (req, res) => {
     try {
-      res.render("login", { msg: req.flash("success") });
+      res.render("login", { msg: req.flash('success') , msg1: req.flash('error')});
     } catch {
       console.log(error);
     }
@@ -50,6 +54,7 @@ class FrontController {
         return res.redirect("/register");
       }
       const isEmail = await UserModel.findOne({ email });
+      // console.log(isEmail)
       if (isEmail) {
         req.flash("error", "Email Already Exists.");
         return res.redirect("/register");
@@ -79,5 +84,47 @@ class FrontController {
       console.log(error);
     }
   };
+  //verifyLogin 
+  static verifyLogin = async (req,res)=>{
+    try {
+      //console.log(req.body)
+      const { email, password} = req.body;
+      if (!email || !password ) {
+        req.flash("error", "All fields are required.");
+        return res.redirect("/register");
+      }
+      const user = await UserModel.findOne({ email });
+      //console.log(user)
+      if (!user) {
+        req.flash("error", "you are not register User.");
+        return res.redirect("/");
+      }else{
+        const isMatch=await bcrypt.compare(password,user.password)
+        console.log(isMatch)
+        if(isMatch){
+          //token
+          const token=jwt.sign({ ID: user.id}, 'jgbd43hnda9a');
+          //console.log(token)
+          res.cookie('token',token)
+          return res.redirect('/home')
+        }else{
+          req.flash("error","email or password does'nt match");
+          return res.redirect("/")
+        }
+
+      }
+      
+    }
+    catch (error) {
+      console.log(error)
+    }
+  }
+  static logout = async (req,res) => {
+    try {
+      res.redirect('/')
+    } catch (error) {
+      console.log(error)
+    }
+  }
 }
 module.exports = FrontController;

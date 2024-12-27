@@ -32,7 +32,7 @@
 
                 <!-- Column-2 -->
                 <div class="col-lg-6 bglogin p-4">
-                    <form>
+                    <form action="/verifyLogin" method="post">
                         <!-- logo -->
                         <center>
                             <img class="mb-4 rounded-circle" src="./Images/logo.jpeg" alt="logo" width="20%"
@@ -48,6 +48,13 @@
                                 <%= msg %>
                             </div>
                         <%} %>
+                        <% if(msg1.length>0){ %>
+                            <div class="alert alert-danger">
+                                <!--to print-->
+                                <%= msg1 %>
+                            </div>
+                        <%} %>
+
 
                                 <!-- Email -->
                                 <div class="row mb-3">
@@ -56,7 +63,7 @@
                                         Email</div>
                                     <div class="col-lg-10">
                                         <input class="form-control" type="email" placeholder="name@example.com"
-                                            required>
+                                        required name="email">
                                     </div>
                                 </div>
 
@@ -66,13 +73,13 @@
                                         class="col-lg-2 text-center bg-secondary rounded text-light fw-light my-auto p-2">
                                         Password</div>
                                     <div class="col-lg-10">
-                                        <input class="form-control" type="password" required>
+                                        <input class="form-control" type="password" name="password" required>
                                     </div>
                                 </div>
 
                                 <!-- Button (Login) -->
                                 <center>
-                                    <button class="btn btn-primary mb-5 btn-lg">Login</button>
+                                    <button type="submit" class="btn btn-primary mb-5 btn-lg">Login</button>
                                 </center>
 
                                 <!-- Register Now -->

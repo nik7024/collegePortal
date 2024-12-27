@@ -6,9 +6,12 @@ const web = require('./Routes/web')
 const connectDb = require('./Database/connectDb')
 const fileupload = require("express-fileupload")
 const cloudinary = require("cloudinary")
+const cookieParser = require('cookie-parser')
 
 //image 
 app.use(fileupload({useTempFiles :true}))
+// token get cookie
+app.use(cookieParser())
 
 //view ejs set 
 app.set('view engine', 'ejs')
