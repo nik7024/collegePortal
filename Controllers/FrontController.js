@@ -6,31 +6,31 @@ const jwt = require('jsonwebtoken');
 class FrontController {
   static home = async (req, res) => {
     try {
-      const {name,image}=req.udata
-      res.render("home",{n:name,i:image});
+      const { name, image, email } = req.udata
+      res.render("home", { n: name, i: image, e: email });
     } catch {
       console.log(error);
     }
   };
   static about = async (req, res) => {
     try {
-      const {name,image}=req.udata
-      res.render("about",{n:name,i:image});
+      const { name, image } = req.udata
+      res.render("about", { n: name, i: image });
     } catch {
       console.log(error);
     }
   };
   static contact = async (req, res) => {
     try {
-      const {name,image}=req.udata
-      res.render("contact",{n:name,i:image});
+      const { name, image } = req.udata
+      res.render("contact", { n: name, i: image });
     } catch {
       console.log(error);
     }
   };
   static login = async (req, res) => {
     try {
-      res.render("login", { msg: req.flash('success') , msg1: req.flash('error')});
+      res.render("login", { msg: req.flash('success'), msg1: req.flash('error') });
     } catch {
       console.log(error);
     }
@@ -85,11 +85,11 @@ class FrontController {
     }
   };
   //verifyLogin 
-  static verifyLogin = async (req,res)=>{
+  static verifyLogin = async (req, res) => {
     try {
       //console.log(req.body)
-      const { email, password} = req.body;
-      if (!email || !password ) {
+      const { email, password } = req.body;
+      if (!email || !password) {
         req.flash("error", "All fields are required.");
         return res.redirect("/register");
       }
@@ -98,29 +98,30 @@ class FrontController {
       if (!user) {
         req.flash("error", "you are not register User.");
         return res.redirect("/");
-      }else{
-        const isMatch=await bcrypt.compare(password,user.password)
-        console.log(isMatch)
-        if(isMatch){
+      } else {
+        const isMatch = await bcrypt.compare(password, user.password)
+        //console.log(isMatch)
+        if (isMatch) {
           //token
-          const token=jwt.sign({ ID: user.id}, 'jgbd43hnda9a');
+          const token = jwt.sign({ ID: user.id }, 'jgbd43hnda9a');
           //console.log(token)
-          res.cookie('token',token)
+          res.cookie('token', token)
           return res.redirect('/home')
-        }else{
-          req.flash("error","email or password does'nt match");
+        } else {
+          req.flash("error", "email or password does'nt match");
           return res.redirect("/")
         }
 
       }
-      
+
     }
     catch (error) {
       console.log(error)
     }
   }
-  static logout = async (req,res) => {
+  static logout = async (req, res) => {
     try {
+      res.clearCookie("token");
       res.redirect('/')
     } catch (error) {
       console.log(error)
