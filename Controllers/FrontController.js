@@ -3,20 +3,25 @@ const bcrypt = require("bcrypt");
 const cloudinary = require("cloudinary");
 const jwt = require('jsonwebtoken');
 const CourseModel = require("../Models/course");
+const randomstring = require("randomstring")
+const nodemailer = require('nodemailer')
 
 class FrontController {
   static home = async (req, res) => {
     try {
-      const { name, image, email, id } = req.udata
-
-      const btech = await CourseModel.findOne({ user_id: id, course: "btech" })
-      const bca = await CourseModel.findOne({ user_id: id, course: "bca" })
-      const mca = await CourseModel.findOne({ user_id: id, course: "mca" })
-      // console.log(btech)
-      // console.log(bca)
-      // console.log(mca)
-      res.render("home", { n: name, i: image, e: email, bca: bca, mca: mca, btech: btech })
-
+      const { name, email, image, id } = req.udata;
+      const btech = await CourseModel.findOne({ user_id: id, course: "btech" });
+      const bca = await CourseModel.findOne({ user_id: id, course: "bca" });
+      const mca = await CourseModel.findOne({ user_id: id, course: "mca" });
+      res.render("home", {
+        n: name,
+        e: email,
+        i: image,
+        btech: btech,
+        bca: bca,
+        mca: mca,
+        msg: req.flash("error"),
+      }); // home.ejs file
     } catch (error) {
       console.log(error);
     }
@@ -46,7 +51,7 @@ class FrontController {
   };
   static register = async (req, res) => {
     try {
-      res.render("register", { msg: req.flash("error") }); // here msg is the variable that stores the message
+      res.render("register", { msg: req.flash("error"),verifyMail: req.flash("verifyMail")  }); // here msg is the variable that stores the message
     } catch {
       console.log(error);
     }
@@ -57,6 +62,7 @@ class FrontController {
       //    console.log(req.files.image)
 
       //     console.log(req.body)
+
       const { name, email, password, confirmpassword } = req.body;
       if (!name || !email || !password || !confirmpassword) {
         req.flash("error", "All fields are required.");
@@ -87,58 +93,117 @@ class FrontController {
           url: imageUpload.secure_url,
         },
       });
+
+      if (data) {
+
+        this.sendVerifymail(name, email, data.id)
+        req.flash('verifyEmail', 'Your Register Success, Plz verify mail')
+        res.redirect('/register')
+      } else {
+        req.flash('error', 'not found')
+        req.redirect('/register')
+      }
+
       req.flash("success", "Register Successfully ! Please login here");
       return res.redirect("/");
     } catch (error) {
       console.log(error);
     }
   };
+
+  static sendVerifymail = async (name, email, user_id) => {
+    //console.log(name, email, user_id);
+    // connenct with the smtp server
+
+    let transporter = await nodemailer.createTransport({
+      host: "smtp.gmail.com",
+      port: 587,
+
+      auth: {
+        user: "ns1082003@gmail.com",
+        pass: "ztup fzks kycz sgth",
+      },
+    });
+    let info = await transporter.sendMail({
+      from: "test@gmail.com", // sender address
+      to: email, // list of receivers
+      subject: "For Verification mail", // Subject line
+      text: "heelo", // plain text body
+      html: "<p>Hii " +
+        name +
+        ',Please click here to <a href="http://localhost:3000/register/verify?id=' +
+        user_id +
+        '">Verify</a>Your mail</p>.',
+
+    });
+    console.log(info);
+  };
+
+  static verifyMail = async (req, res) => {
+    try {
+      //console.log(req.query.id)
+      const updateinfo = await UserModel.findByIdAndUpdate(req.query.id, {
+        is_verify: 1,
+      });
+      console.log(updateinfo)
+      if (updateinfo) {
+        let token = jwt.sign({ ID: updateinfo.id }, 'jgbd43hnda9a')
+        //console.log(token)middleware
+        res.cookie('token', token, token, {
+          httpOnly: true,
+          secure: true,
+          maxAge: 3600000,
+        })
+        res.redirect("/home");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   //verifyLogin 
+  //verifyLogin
   static verifyLogin = async (req, res) => {
     try {
-      //console.log(req.body)
-      const { email, password } = req.body;
-      if (!email || !password) {
-        req.flash("error", "All fields are required.");
-        return res.redirect("/register");
-      }
-      const user = await UserModel.findOne({ email });
-      //console.log(user)
-      if (!user) {
-        req.flash("error", "you are not register User.");
-        return res.redirect("/");
-      } else {
-        const isMatch = await bcrypt.compare(password, user.password)
-        //console.log(isMatch)
-        if (isMatch) {
-          //token
-          if (user.role == 'admin') {
-            const token = jwt.sign({ ID: user.id }, 'jgbd43hnda9a');
-            res.cookie('token', token)
-            return res.redirect('/admin/dashboard')
-          }
-          if (user.role == 'student') {
-            const token = jwt.sign({ ID: user.id }, 'jgbd43hnda9a');
-            //console.log(token)
-            res.cookie('token', token)
-            return res.redirect('/home')
-          }
-          
-          
-          
-          
+        // console.log(req.body)
+        const { email, password, } = req.body
+
+        const user = await UserModel.findOne({ email });
+        // console.log(user)
+        if (!user) {
+            req.flash("error", "Your are not register User");
+            return res.redirect('/')
         } else {
-          req.flash("error", "email or password does'nt match");
-          return res.redirect("/")
+            const isMatch = await bcrypt.compare(password, user.password)
+            // console.log(isMatch)
+            if (isMatch) {
+                if (user.role == 'admin') {
+                    // token
+                    const token = jwt.sign({ ID: user.id }, 'jgbd43hnda9a')
+                    // console.log(token)
+                    res.cookie('token', token)
+                    return res.redirect('admin/dashboard')
+
+
+                } else if (user.role == 'student' && user.is_verify == 1) {
+                    const token = jwt.sign({ ID: user.id }, 'jgbd43hnda9a')
+                    // console.log(token)
+                    res.cookie('token', token)
+                    return res.redirect('/home')
+                }
+
+            } else {
+                req.flash('error', "please verify your Email");
+                return res.redirect('/')
+            }
+
+
         }
-
-      }
+    } catch (error) {
+        console.log(error)
 
     }
-    catch (error) {
-      console.log(error)
-    }
-  }
+};
   static logout = async (req, res) => {
     try {
       res.clearCookie("token");
@@ -151,8 +216,8 @@ class FrontController {
   //profile
   static profile = async (req, res) => {
     try {
-      const {name, image, email} = req.udata
-      res.render("profile", { n: name, i: image,e:email,message: req.flash("error") })
+      const { name, image, email } = req.udata
+      res.render("profile", { n: name, i: image, e: email, message: req.flash("error") })
     } catch (error) {
       console.log(error)
     }
@@ -231,5 +296,87 @@ class FrontController {
       console.log(error);
     }
   };
+
+  static forgetPasswordVerify = async (req, res) => {
+    try {
+      const { email } = req.body;
+      const userData = await UserModel.findOne({ email: email });
+      //console.log(userData)
+      if (userData) {
+        const randomString = randomstring.generate();
+        await UserModel.updateOne(
+          { email: email },
+          { $set: { token: randomString } }
+        );
+        this.sendEmail(userData.name, userData.email, randomString);
+        req.flash("success", "Plz Check Your mail to reset Your Password!");
+        res.redirect("/");
+      } else {
+        req.flash("error", "You are not a registered Email");
+        res.redirect("/");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  static sendEmail = async (name, email, token) => {
+    // console.log(name,email,status,comment)
+    // connenct with the smtp server
+
+    let transporter = await nodemailer.createTransport({
+      host: "smtp.gmail.com",
+      port: 587,
+
+      auth: {
+        user: "ns1082003@gmail.com",
+        pass: "ztup fzks kycz sgth",
+      },
+    });
+    let info = await transporter.sendMail({
+      from: "test@gmail.com", // sender address
+      to: email, // list of receivers
+      subject: "Reset Password", // Subject line
+      text: "heelo", // plain text body
+      html: "<p>Hii " +
+        name +
+        ',Please click here to <a href="http://localhost:3000/reset_password?token=' +
+        token +
+        '">Reset</a>Your Password.',
+
+    });
+  };
+
+  static reset_Password = async (req, res) => {
+    try {
+      const token = req.query.token;
+      const tokenData = await UserModel.findOne({ token: token });
+      console.log(tokenData)
+      if (tokenData) {
+        res.render("reset_password", { user_id: tokenData._id });
+      } else {
+        res.render("404");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  static reset_Password1 = async (req, res) => {
+    try {
+      const { password, user_id } = req.body;
+      const newHashPassword = await bcrypt.hash(password, 10);
+      await UserModel.findByIdAndUpdate(user_id, {
+        password: newHashPassword,
+        token: "",
+      });
+      req.flash("success", "Reset Password Updated successfully ");
+      res.redirect("/");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+
 }
 module.exports = FrontController;

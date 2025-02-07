@@ -1,41 +1,43 @@
-const ContactModel = require('../Models/contact');
-class ContactController {
-    static createContact = async (req, res) => {
-        try {
-            console.log(req.body)
-            const { id } = req.udata
-            const { Firstname, Lastname, Username, Email, Address, Address2, Phone, Country, State,  } = req.body;
+const contactModel = require('../models/contact')
 
-            await ContactModel.create({
-                Firstname,
-                Lastname,
-                Username,
-                Email,
-                Address,
-                Address2,
-                Phone,
-                Country,
-                State,
-                
+
+class ContactController {
+    static contact_insert = async (req, res) => {
+        try {
+            // console.log(req.body)
+            const { name, email, phone, message } = req.body
+            await contactModel.create({
+                name,
+                email,
+                phone,
+                message
             })
             res.redirect('/contactDisplay')
-        }
-        catch (error) {
+        } catch (error) {
             console.log(error)
         }
     }
-
     static contactDisplay = async (req, res) => {
         try {
-            const { id, Firstname } = req.udata
-            const contact = await ContactModel.find({ user_id: id });
-            console.log(contact)
-            res.render('contact/display', { c: contact, n:Firstname, s:Lastname, msg: req.flash('success') })
-            res.send("display")
-        }
-        catch {
-            console.log(error);
+            const { name, email,image } = req.udata
+            const contact = await contactModel.find()
+
+            res.render('contact/display', {c:contact,i:image, n: name, e: email })
+        } catch (error) {
+            console.log(error)
         }
     }
+  
+    static delete_contact = async(req,res)=>{
+        try {
+            const id =req.params.id
+            await contactModel.findByIdAndDelete(id)
+
+            res.redirect('/contactDisplay')
+        } catch (error) {
+            
+        }
+    }
+
 }
-module.exports = ContactController;
+module.exports = ContactController
