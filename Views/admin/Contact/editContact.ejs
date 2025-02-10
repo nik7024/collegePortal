@@ -1,0 +1,108 @@
+<%- include('../header.ejs')%>
+<%- include('../sidebar.ejs')%>
+
+    <!-- <h1>Course Details</h1>
+    <h1><%=c%></h1>
+    <h1><%=n%></h1> --> 
+    <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0">Contact</h1>
+          </div><!-- /.col -->
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">Home</a></li>
+              <li class="breadcrumb-item active">Edit Contact</li>
+            </ol>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+
+    <!-- Main content -->
+    <div class="content">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-12">
+
+            <h1>Contact Edit</h1>
+<div class="container mt-5">
+
+    <form action="/admin/contactUpdate/<%=c.id%>" method="post">
+        <div class="mb-3">
+            <label for="">firstName</label>
+            <input type="text" value="<%= c.firstName %>" name="firstName" class="form-control">
+        </div>
+        <div class="mb-3">
+            <label for="">lastName</label>
+            <input type="text" value="<%= c.lastName %>" name="lastName" class="form-control">
+        </div>
+        <div class="mb-3">
+            <label for="">Username</label>
+            <input type="text" value="<%= c.Username %>" name="Username" class="form-control">
+        </div>
+        <div class="mb-3">
+            <label for="">Email</label>
+            <input type="text" value="<%= c.email %>" name="email" class="form-control">
+        </div>
+        <div class="mb-3">
+            <label for="">Address 1</label>
+            <textarea name="address1" class="form-control" ><%=c.address1%></textarea>
+        </div>
+        <div class="mb-3">
+            <label for="">Address 2</label>
+            <textarea name="address2" class="form-control" ><%=c.address2%></textarea>
+        </div>
+        <div class="mb-3">
+            <label for="">Country</label>
+            <select name="country">
+                <option value="">select country</option>
+                <option value="United States" <%= c.country=="United States"?"selected":"" %>>United States</option>
+          </select>
+            
+        </div>
+        
+        <div class="mb-3">
+            <label for="">State</label>
+            <select name="state" class="form-control form-select">
+                <option value="">select education</option>
+                <option value="California"  <%= c.state=="California"?"selected":"" %>>California</option>
+                <option value="Newyork"  <%= c.state=="Newyork"?"selected":"" %>>Newyork</option>
+                
+
+            </select>
+        </div>
+        
+        <button type="submit" class="btn btn-success">Update</button>
+
+    </form>
+    
+    </div> <!--container-end-->
+            
+            
+               </div>
+               <!--card-col-end-->
+          
+            
+          
+        </div>
+        <!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content -->
+  </div>
+  <!-- /.content-wrapper -->
+    
+
+
+
+
+    
+
+
+<%- include('../footer.ejs')%>

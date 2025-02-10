@@ -2,7 +2,7 @@ const express = require('express')
 // console.log(express)
 const app = express()
 const port = 3000
-const web = require('./Routes/web')
+const web = require('./routes/web')
 const connectDb = require('./Database/connectDb')
 const fileupload = require("express-fileupload")
 const cloudinary = require("cloudinary")

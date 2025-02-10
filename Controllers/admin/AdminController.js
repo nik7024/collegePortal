@@ -1,11 +1,15 @@
 const CourseModel = require('../../Models/course')
-const contactModel = require('../../models/contact')
+const contactModel = require('../../Models/contact')
 const nodemailer = require('nodemailer')
 class AdminController {
     static dashboard = async (req, res) => {
         try {
             const { name, email, image } = req.udata
-            res.render('admin/dashboard', { n: name, i: image, e: email })
+            const totalUsers = await CourseModel.countDocuments(); // Count all users
+            const approvedUsers = await CourseModel.countDocuments({ status: "Approved" });
+            const pendingUsers = await CourseModel.countDocuments({ status: "pending" });
+            const rejectedUsers = await CourseModel.countDocuments({ status: "Reject" });
+            res.render('admin/dashboard', { n: name, i: image, e: email,  totalUsers, approvedUsers, pendingUsers, rejectedUsers })
         }
         catch (error) {
             console.log(error)
@@ -214,6 +218,152 @@ class AdminController {
              `, // html body
         });
     };
+
+    static viewCourse = async (req, res) => {
+        try {
+            const { name, image, email } = req.udata
+            const id = req.params.id
+            const course = await courseModel.findById(id)
+
+            res.render('admin/view', { n: name, i: image, e: email, c: course })
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    static courseDelete = async (req, res) => {
+        try {
+            const { name, image, email } = req.udata
+            const id = req.params.id
+            const course = await courseModel.findByIdAndDelete(id)
+
+            res.redirect('admin/courseDisplay', { n: name, i: image, e: email, c: course })
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    static editCourse = async (req, res) => {
+        try {
+            const { name, image, email } = req.udata
+            const id = req.params.id
+            const course = await courseModel.findById(id)
+
+            res.render('admin/editCourse', { n: name, i: image, e: email, c: course })
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    static update_course = async (req, res) => {
+        try {
+            const id = req.params.id
+            const { name, email, phone, education, gender, dob, course, address } = req.body
+            await courseModel.findByIdAndUpdate(id, {
+                name,
+                email,
+                phone,
+                address,
+                dob,
+                gender,
+                education,
+                course
+            })
+            req.flash('success', 'Course updated successfully by Admin.')
+            res.redirect('/admin/Coursedisplay')
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    static update_pass = async (req, res) => {
+        try {
+            const { name, image, email } = req.udata
+            res.render("admin/update_pass", { n: name, i: image, e: email, msg: req.flash('error') })
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    static profile_update = async (req, res) => {
+        try {
+            const { name, image, email } = req.udata
+            res.render("admin/profile_update", { n: name, i: image, e: email, msg: req.flash('success') })
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    static changePassword = async (req, res) => {
+        try {
+            const { id } = req.udata;
+            // console.log(req.body);
+            const { op, np, cp } = req.body;
+            if (op && np && cp) {
+                const user = await UserModel.findById(id);
+                const isMatched = await bcrypt.compare(op, user.password);
+                //console.log(isMatched)
+                if (!isMatched) {
+                    req.flash("error", "Current password is incorrect ");
+                    res.redirect("/admin/update_pass");
+                } else {
+                    if (np != cp) {
+                        req.flash("error", "Password does not match");
+                        res.redirect("/admin/update_pass");
+                    } else {
+                        const newHashPassword = await bcrypt.hash(np, 10);
+                        await UserModel.findByIdAndUpdate(id, {
+                            password: newHashPassword,
+                        });
+                        req.flash("success", "Password Updated by Admin successfully ");
+                        res.redirect("/");
+                    }
+                }
+            } else {
+                req.flash("error", "ALL fields are required ");
+                res.redirect("/");
+            }
+        } catch (error) {
+            console.log(error);
+        }
+
+    };
+
+    static updateProfile = async (req, res) => {
+        try {
+            const { id } = req.udata;
+            const { name, email } = req.body;
+            if (req.files) {
+                const user = await UserModel.findById(id);
+                const imageID = user.image.public_id;
+                // console.log(imageID);
+
+                //deleting image from Cloudinary
+                await cloudinary.uploader.destroy(imageID);
+                //new image update
+                const imagefile = req.files.image;
+                const imageupload = await cloudinary.uploader.upload(
+                    imagefile.tempFilePath,
+                    {
+                        folder: "userprofile",
+                    }
+                );
+                var data = {
+                    name: name,
+                    email: email,
+                    image: {
+                        public_id: imageupload.public_id,
+                        url: imageupload.secure_url,
+                    },
+                };
+            } else {
+                var data = {
+                    name: name,
+                    email: email,
+                };
+            }
+            await UserModel.findByIdAndUpdate(id, data);
+            req.flash("success", "Profile Update by Admin successfully");
+            res.redirect("/admin/profile_update");
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
 }
 
 module.exports = AdminController;

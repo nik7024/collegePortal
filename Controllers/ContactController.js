@@ -1,4 +1,4 @@
-const contactModel = require('../models/contact')
+const contactModel = require('../Models/contact')
 
 
 class ContactController {
@@ -28,6 +28,16 @@ class ContactController {
         }
     }
   
+    static delete_contact = async(req,res)=>{
+        try {
+            const id =req.params.id
+            await contactModel.findByIdAndDelete(id)
+
+            res.redirect('/contactDisplay')
+        } catch (error) {
+            
+        }
+    }
     static delete_contact = async(req,res)=>{
         try {
             const id =req.params.id
