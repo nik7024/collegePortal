@@ -1,55 +1,59 @@
 const express = require('express')
+
+const connectDb = require("./database/connectDb")
+const route = require("./routes/web")
+const fileUpload = require("express-fileupload")
+const cookiesParser = require("cookie-parser")
 // console.log(express)
 const app = express()
 const port = 3000
-const web = require('./routes/web')
-const connectDb = require('./Database/connectDb')
-const fileupload = require("express-fileupload")
-const cloudinary = require("cloudinary")
-const cookieParser = require('cookie-parser')
 
-//image 
-app.use(fileupload({useTempFiles :true}))
-// token get cookie
-app.use(cookieParser())
+//image upload
+app.use(fileUpload({ useTempFiles: true }))
+// view ejs set
+app.set("view engine", "ejs")
+//css image link public 
+app.use(express.static("public"))
+app.use(express.urlencoded({ extended: false }))
 
-//view ejs set 
-app.set('view engine', 'ejs')
-//css image js link public
-app.use(express.static('public'))
-//connect database
-connectDb()
-//parse application/x-www-form-urlencoded
-app.use(express.urlencoded({extended:false}))
-//connect flash and express-session
-const session = require('express-session')
-const flash = require('connect-flash')
-//message
+app.use(cookiesParser())
+
+//connect flash and session 
+const session = require("express-session")
+const flash = require("connect-flash")
+
+//messages
 app.use(session({
-    secret:'secret',
-    cookie:{maxAge:60000},
-    resave: false,
-    saveUninitialized:false,
-}));
-//flash message
+  secret: "secret",
+  cookie: { maxAge: 60000 },
+  resave: false,
+  saveUninitialized: false
+}))
+
+//flash messages 
 app.use(flash());
 
-//setup
-cloudinary.config({
-    cloud_name: 'dxhebpcsz',
-    api_key: '431875666151272',
-    api_secret: 'sGQkiWBwDlyB1Xj-1apRL96r9q4'
-});
+
+
+
+//route 
+app.use('/', route)
+
+
+//connecting to db
+connectDb()
+
+
+// console.log(app.get===express.Router().get) 
 
 
 
 
 
 
-//route load
-app.use('/',web)
 
-// server create
-app.listen(port, ()=>{
-    console.log(`server start localhost:${port}`)
+
+//server create
+app.listen(port, () => {
+  console.log(`server start localhost:port ${port}`)
 })

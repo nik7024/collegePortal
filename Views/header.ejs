@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -5,7 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>College Portal</title>
+    <title>Home</title>
 
     <!-- CSS Link -->
     <link rel="stylesheet" href="/css/style.css">
@@ -53,20 +54,19 @@
                             <a href="#"
                                 class="nav-link d-block link-body-emphasis text-decoration-none dropdown-toggle text-white"
                                 data-bs-toggle="dropdown" aria-expanded="false">
-                                <img src="<%=i.url %>" alt="mdo" width="40" height="40"
+                                <img src="<%= i.url %>" alt="mdo" width="40" height="40"
                                     class="rounded-circle">
                             </a>
                             <ul class="dropdown-menu text-small">
-                                
                                 <li><a class="dropdown-item" href="/profile">Profile</a></li>
                                 <li>
                                     <hr class="dropdown-divider">
                                 </li>
-                                <li><a class="dropdown-item" href="/logout">Log out</a></li>
+                                <li><a class="dropdown-item" href="logout">Log out</a></li>
                             </ul>
                         </li>
                         <li class="nav-item my-auto">
-                            <a href="/logout" class="btn btn-primary me-3 border-light">Log out</a>
+                            <a href="logout" class="btn btn-primary me-3 border-light">Log out</a>
                         </li>
                     </ul>
                 </div>
@@ -74,3 +74,7 @@
         </nav>
     </section>
     <!-- End Navbar -->
+
+</body>
+
+</html>

@@ -9,4 +9,4 @@ const authRoles=(roles)=>{
         next()
     }
 }
-module.exports=authRoles
+module.exports = authRoles

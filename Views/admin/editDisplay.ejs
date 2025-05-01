@@ -1,0 +1,71 @@
+<%- include('./header.ejs') %>
+    <%- include('./sidebar.ejs') %>
+        <!-- Content Wrapper. Contains page content -->
+        <div class="content-wrapper">
+            <!-- Content Header (Page header) -->
+            <div class="content-header">
+                <div class="container-fluid">
+                    <div class="row mb-2">
+                        <div class="col-sm-6">
+                            <h1 class="m-0 text-dark">Course</h1>
+                        </div><!-- /.col -->
+                        <div class="col-sm-6">
+                            <ol class="breadcrumb float-sm-right">
+                                <li class="breadcrumb-item"><a href="/admin/dashboard">Home</a></li>
+                                <li class="breadcrumb-item active">Course Display</li>
+                            </ol>
+                        </div><!-- /.col -->
+                    </div><!-- /.row -->
+                </div><!-- /.container-fluid -->
+            </div>
+            <!-- /.content-header -->
+
+
+            <div class="container mt-5">
+
+                <form action="/admin/courseUpdate/<%= c.id %>" method="post">
+                    <div class="col-md-6">
+                        <label for="">Name</label>
+                        <input type="text" value="<%= c.name %>" name="name" class="form-control">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="">Email</label>
+                        <input type="text" value="<%= c.email %>" name="email" class="form-control">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="">Phone no.</label>
+                        <input type="number" name="phone" value="<%= c.phone %>" class="form-control">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="">DOB</label>
+                        <input type="date" name="dob" class="form-control" value="<%= c.dob %>">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="">Address</label>
+                        <textarea name="address" class="form-control"> <%= c.address %></textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="">Gender</label>
+                        <input type="radio" name="gender" value="male" <%=c.gender=='male' ? 'checked' :'' %>>Male
+                        <input type="radio" name="gender" value="female" <%=c.gender=='female' ? 'checked' :'' %>>Female
+                    </div>
+                    <div class="col-md-6">
+                        <label for="">Education</label>
+                        <select name="education" class="form-control form-select">
+                            <option value="">select education</option>
+                            <option value="10" <%=c.education=='10' ? 'selected' :'' %>>10th</option>
+                            <option value="12" <%=c.education=='12' ? 'selected' :'' %>>12th</option>
+
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="">Course</label>
+                        <input type="text" value="<%= c.course %>" readonly class="form-control" name="course">
+                    </div>
+
+                    <button type="submit" class="btn btn-success mb-5 mt-3">Update</button>
+
+                </form>
+
+            </div>
+            

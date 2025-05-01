@@ -1,6 +1,4 @@
-
-    <%- include('./header.ejs') %>
-    
+<%- include('./header.ejs') %>
     <!-- carousel -->
     <section id="carousel">
         <div id="myCarousel" class="carousel slide mb-6" data-bs-ride="carousel">
@@ -12,7 +10,7 @@
                 <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="2" aria-label="Slide 3"
                     class=""></button>
             </div> -->
-            
+
             <div class="carousel-inner">
                 <!-- item-1 -->
                 <div class="carousel-item active" data-bs-interval="4000">
@@ -94,12 +92,14 @@
                             <div class="card-body text-center">
                                 <h2>B.Tech</h2>
                                 <p class="card-text">B.Tech is a professional undergraduate engineering degree</p>
-                                <% if(btech){%>
-                                    <a href="/courseDisplay" class="btn btn-primary">Course Display</a>
-                                    <%}else{%>
-                                        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+
+                                <% if(btech){ %>
+                                    <a href="/courseDisplay" class="btn btn-info">Course Display</a>
+                                    <% }else { %>
+                                        <button type="button" class="btn btn-info" data-bs-toggle="modal"
                                             data-bs-target="#btech">Register</button>
                                         <% } %>
+
                             </div>
                         </div>
                     </div>
@@ -111,10 +111,11 @@
                             <div class="card-body text-center">
                                 <h2>BCA</h2>
                                 <p class="card-text">BCA is a three-year Bachelor's Degree in Computer Application</p>
-                                <% if(bca){%>
-                                    <a href="/courseDisplay" class="btn btn-primary">Course Display</a>
-                                    <%}else{%>
-                                        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+
+                                <% if(bca){ %>
+                                    <a href="/courseDisplay" class="btn btn-info">Course Display</a>
+                                    <% }else { %>
+                                        <button type="button" class="btn btn-info" data-bs-toggle="modal"
                                             data-bs-target="#bca">Register</button>
                                         <% } %>
                             </div>
@@ -129,10 +130,10 @@
                                 <h2>MCA</h2>
                                 <p class="card-text">MCA is a professional post-graduation degree in Computer
                                     Application</p>
-                                     <% if(mca){%>
-                                    <a href="/courseDisplay" class="btn btn-primary">Course Display</a>
-                                    <%}else{%>
-                                        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                <% if(mca){ %>
+                                    <a href="/courseDisplay" class="btn btn-info">Course Display</a>
+                                    <% }else { %>
+                                        <button type="button" class="btn btn-info" data-bs-toggle="modal"
                                             data-bs-target="#mca">Register</button>
                                         <% } %>
                             </div>
@@ -145,7 +146,7 @@
     </section>
     <!-- End Courses -->
 
-     <!--Btech Modal -->
+    <!--Btech Modal -->
     <div class="modal fade" id="btech" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -318,5 +319,8 @@
         </div>
     </div>
     <!--End MCA Modal -->
-
     <%- include('./footer.ejs') %>
+
+        </body>
+
+        </html>

@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
-const courseSchema = new mongoose.Schema({
+
+const CourseSchema = new mongoose.Schema({
     name: {
         type: String,
         Required: true,
@@ -32,22 +33,19 @@ const courseSchema = new mongoose.Schema({
         type: String,
         Required: true,
     },
-    user_id: {
+    user_id:{
         type: String,
         Required: true,
     },
-    status: {
-        type: String,
-        default: "Pending"
+    status:{
+        type:String,
+        default:"Pending"
     },
-    comment: {
-        type: String,
-        default: "Pending"
+    comment:{
+        type:String,
+        default:"Pending"
     }
-}, { timestamps: true });
-
-const CourseModel = mongoose.model('course', courseSchema)
+    
+}, { timestamps: true })//jb ham insert krege to 2 field dega createdadd -->date time btyegi or update
+const CourseModel = mongoose.model('course', CourseSchema)
 module.exports = CourseModel
-
-
-
